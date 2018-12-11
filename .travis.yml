@@ -34,7 +34,7 @@ before_script:
 
 script:
   - pushd Propositional
-  - mvn test
+  - mvn test -Dtest=TestClass
   - popd
 
 notifications:
