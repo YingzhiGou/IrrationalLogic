@@ -16,13 +16,12 @@ before_install:
   - rm ~/.m2/settings.xml
 
 install:
-  mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - pushd Propositional
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - popd
 
 before_script:
   - unset _JAVA_OPTIONS # travis/travis#8408
-  - echo $HOME
-  - echo $JAVA_OPTS
-  - echo $MAVEN_OPTS
 
 jdk:
   - oraclejdk8
@@ -39,7 +38,10 @@ jobs:
   include:
     - state: test
       name: "Test Propositional"
-      script: mvn test
+      script:
+        - pushd Propositional
+        - mvn test
+        - popd
 
 
 
