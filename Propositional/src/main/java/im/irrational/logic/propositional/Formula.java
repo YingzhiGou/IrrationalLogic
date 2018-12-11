@@ -2,7 +2,10 @@ package im.irrational.logic.propositional;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
     HashSet<ILogicFormula> clauses;
