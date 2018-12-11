@@ -49,7 +49,7 @@ class VocabularyTest {
         str = "~seoaf";
         testToStringHelper(voc, str);
         str = " ~seoaf ";
-        testToStringHelper(voc, str.strip());
+        testToStringHelper(voc, str.trim());
     }
 
     private void testToStringHelper(@NotNull Vocabulary voc, String str) {
