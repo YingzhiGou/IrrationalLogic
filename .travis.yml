@@ -1,0 +1,47 @@
+language: java
+
+sudo: false
+
+dist: trusty
+
+git:
+  depth: 10   # don't need more than one level for our builds
+
+cache:
+  directories:
+    - $HOME/.m2
+
+before_install:
+  - unset _JAVA_OPTIONS
+  - rm ~/.m2/settings.xml
+
+install:
+  mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+before_script:
+  - unset _JAVA_OPTIONS # travis/travis#8408
+  - echo $HOME
+  - echo $JAVA_OPTS
+  - echo $MAVEN_OPTS
+
+jdk:
+  - oraclejdk8
+  - oraclejdk11
+  - openjdk8
+  - openjdk11
+
+os:
+  - linux
+
+jobs:
+  fast_finish: true
+
+  include:
+    - state: test
+      name: "Test Propositional"
+      script: mvn test
+
+
+
+notifications:
+  email: false
