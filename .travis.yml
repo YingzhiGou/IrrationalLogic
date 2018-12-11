@@ -23,12 +23,6 @@ install:
 before_script:
   - unset _JAVA_OPTIONS # travis/travis#8408
 
-jdk:
-  - oraclejdk8
-  - oraclejdk11
-  - openjdk8
-  - openjdk11
-
 os:
   - linux
 
@@ -38,6 +32,11 @@ jobs:
   include:
     - state: test
       name: "Test Propositional"
+      jdk:
+        - oraclejdk8
+        - oraclejdk11
+        - openjdk8
+        - openjdk11
       script:
         - pushd Propositional
         - mvn test
