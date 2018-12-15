@@ -9,5 +9,8 @@
         <module name="Propositional" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Propositional" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
