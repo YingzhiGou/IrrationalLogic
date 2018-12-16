@@ -30,7 +30,7 @@ public class Literal implements ILogicFormula {
         return (value > 0 ? name : NEGATION_SYMBOL.concat(name));
     }
 
-    public ILogicFormula negation() {
+    public Literal negation() {
         Literal neg = this.clone();
         neg.value = -neg.value;
         return neg;
