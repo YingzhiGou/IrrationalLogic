@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FormulaTest {
@@ -75,9 +77,22 @@ class FormulaTest {
         }
     }
 
-    @Disabled("not implemented")
     @Test
     void contaionsAll() {
+        Formula formula = new Formula();
+        Literal literal = new Literal("test", 1);
+        try {
+            formula.add(literal);
+            formula.add(literal.negation());
+            Literal[] literals = new Literal[2];
+            assertFalse(formula.containsAll(Arrays.asList(literals)));
+            literals[0] = literal;
+            literals[1] = literal.negation();
+            assertTrue(formula.containsAll(Arrays.asList(literals)));
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
     }
 
     @Disabled("not implemented")

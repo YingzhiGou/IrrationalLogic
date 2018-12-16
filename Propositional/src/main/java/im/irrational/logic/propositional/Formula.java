@@ -81,7 +81,7 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         return clauses.contains(other);
     }
 
-    public boolean contaionsAll(final Collection<?> other){
+    public boolean containsAll(final Collection<?> other) {
         return clauses.containsAll(other);
     }
 
