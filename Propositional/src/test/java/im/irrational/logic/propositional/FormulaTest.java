@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FormulaTest {
 
@@ -27,7 +26,7 @@ class FormulaTest {
             assertEquals(formula.size(), 1);
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
-            fail(formulaError.getMessage());
+            fail(formulaError);
         }
     }
 
@@ -36,9 +35,44 @@ class FormulaTest {
     void convertToCNF() {
     }
 
-    @Disabled("not implemented")
     @Test
     void contains() {
+        Formula formula = new Formula();
+        Literal literal = new Literal("test", 1);
+        assertFalse(formula.contains(literal));
+        try {
+            formula.add(literal);
+            assertTrue(formula.contains(literal));
+            assertTrue(formula.contains(literal.clone()));
+            assertFalse(formula.contains(literal.negation()));
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+        Formula anotherFormula = new Formula();
+        assertFalse(formula.contains(anotherFormula));
+        anotherFormula.setType(eClauseType.CONJUNCTIVE);
+        try {
+            formula.add(anotherFormula);
+            assertTrue(formula.contains(literal));
+            assertFalse(formula.contains(anotherFormula));
+            assertFalse(formula.contains(anotherFormula.clone()));
+            assertFalse(formula.contains(anotherFormula.negation()));
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+        try {
+            anotherFormula.add(literal.negation());
+            formula.add(anotherFormula);
+            assertTrue(formula.contains(literal));
+            assertFalse(formula.contains(new Formula(eClauseType.CONJUNCTIVE)));
+            assertTrue(formula.contains(anotherFormula));
+            assertTrue(formula.contains(anotherFormula.clone()));
+            assertFalse(formula.contains(anotherFormula.negation()));
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+        }
     }
 
     @Disabled("not implemented")
