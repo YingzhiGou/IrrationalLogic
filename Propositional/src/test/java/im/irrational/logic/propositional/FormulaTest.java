@@ -10,9 +10,12 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FormulaTest {
-
+    Formula formula;
+    Literal literal;
     @BeforeEach
     void setUp() {
+        formula = new Formula();
+        literal = new Literal("test", 1);
     }
 
     @AfterEach
@@ -21,7 +24,6 @@ class FormulaTest {
 
     @Test
     void size() {
-        Formula formula = new Formula();
         assertEquals(formula.size(), 0);
         try {
             formula.add(new Literal("test", 1));
@@ -39,8 +41,6 @@ class FormulaTest {
 
     @Test
     void contains() {
-        Formula formula = new Formula();
-        Literal literal = new Literal("test", 1);
         assertFalse(formula.contains(literal));
         try {
             formula.add(literal);
@@ -79,8 +79,6 @@ class FormulaTest {
 
     @Test
     void contaionsAll() {
-        Formula formula = new Formula();
-        Literal literal = new Literal("test", 1);
         try {
             formula.add(literal);
             formula.add(literal.negation());
@@ -95,24 +93,61 @@ class FormulaTest {
         }
     }
 
-    @Disabled("not implemented")
     @Test
     void getType() {
+        assertEquals(formula.getType(), eClauseType.DISJUNCTIVE);
+        try {
+            assertEquals(formula.negation().getType(), eClauseType.CONJUNCTIVE);
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
     }
 
-    @Disabled("not implemented")
     @Test
     void setType() {
+        formula.setType(eClauseType.CONJUNCTIVE);
+        assertEquals(formula.getType(), eClauseType.CONJUNCTIVE);
+        formula.setType(eClauseType.DISJUNCTIVE);
+        assertEquals(formula.getType(), eClauseType.DISJUNCTIVE);
     }
 
-    @Disabled("not implemented")
     @Test
     void add() {
+        try {
+            formula.add(literal);
+            System.out.println(formula.toString());
+            assertEquals(formula.size(), 1);
+            assertTrue(formula.contains(literal));
+            formula.add(formula.negation());
+            System.out.println(formula.toString());
+            assertEquals(formula.size(), 2);
+            formula.add(formula.negation());
+            System.out.println(formula.toString());
+            assertEquals(formula.size(), 3);
+            formula.add(formula);
+            System.out.println(formula.toString());
+            assertEquals(formula.size(), 4);
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+
     }
 
-    @Disabled("not implemented")
     @Test
     void negation() {
+        try {
+            assertEquals(formula.negation().getType(), eClauseType.CONJUNCTIVE);
+            formula.add(literal);
+            Formula neg = formula.negation();
+            assertEquals(neg.getType(), eClauseType.CONJUNCTIVE);
+            assertEquals(neg.toString(), "(~test)");
+            // todo more test cases
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
     }
 
     @Disabled("not implemented")
