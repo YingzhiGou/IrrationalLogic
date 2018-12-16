@@ -1,18 +1,19 @@
 package im.irrational.logic.propositional;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class VocabularyTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     void next() {
         int current = Vocabulary.next();
         assertEquals(current + 1, Vocabulary.next());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void resetTemp() {
         int current = Vocabulary.next();
         Vocabulary.resetTemp();
@@ -28,7 +29,7 @@ class VocabularyTest {
         Vocabulary.resetTemp();
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void nextTemp() {
         int current = Vocabulary.next();
         Vocabulary.resetTemp();
@@ -39,7 +40,7 @@ class VocabularyTest {
         Vocabulary.resetTemp();
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void testToString() {
         Vocabulary voc = new Vocabulary();
         String str = "p";
@@ -62,7 +63,7 @@ class VocabularyTest {
         }
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void parse() {
         Vocabulary voc = new Vocabulary();
         String str = "p";
@@ -85,7 +86,7 @@ class VocabularyTest {
         }
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void toLiteral() {
         Vocabulary voc = new Vocabulary();
         assertNull(voc.toLiteral(623243));
