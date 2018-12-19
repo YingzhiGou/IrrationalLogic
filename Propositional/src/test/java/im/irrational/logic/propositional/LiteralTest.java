@@ -19,33 +19,33 @@ class LiteralTest {
     @Test
     void getValue() {
         Literal literal = new Literal("test", 1);
-        assertEquals(literal.getValue(), 1);
+        assertEquals(1, literal.getValue());
     }
 
     @Test
     void getName() {
         Literal literal = new Literal("test", 1);
-        assertEquals(literal.getName(), "test");
+        assertEquals("test", literal.getName());
     }
 
     @Test
     void test_toString() {
         Literal literal = new Literal("test", 1);
-        assertEquals(literal.toString(), "test");
-        assertEquals(literal.negation().toString(), Literal.NEGATION_SYMBOL + "test");
+        assertEquals("test", literal.toString());
+        assertEquals(Literal.NEGATION_SYMBOL + "test", literal.negation().toString());
     }
 
     @Test
     void negation() {
         Literal literal = new Literal("test", 1);
         literal = literal.negation();
-        assertEquals(literal.getValue(), -1);
-        assertEquals(literal.getName(), "test");
-        assertEquals(literal.toString(), Literal.NEGATION_SYMBOL + "test");
+        assertEquals(-1, literal.getValue());
+        assertEquals("test", literal.getName());
+        assertEquals(Literal.NEGATION_SYMBOL + "test", literal.toString());
         literal = literal.negation();
-        assertEquals(literal.getValue(), 1);
-        assertEquals(literal.getName(), "test");
-        assertEquals(literal.toString(), "test");
+        assertEquals(1, literal.getValue());
+        assertEquals("test", literal.getName());
+        assertEquals("test", literal.toString());
     }
 
     @Test

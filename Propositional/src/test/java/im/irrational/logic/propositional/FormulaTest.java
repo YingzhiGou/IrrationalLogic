@@ -27,7 +27,7 @@ class FormulaTest {
         assertEquals(formula.size(), 0);
         try {
             formula.add(new Literal("test", 1));
-            assertEquals(formula.size(), 1);
+            assertEquals(1, formula.size());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -95,9 +95,9 @@ class FormulaTest {
 
     @Test
     void getType() {
-        assertEquals(formula.getType(), eClauseType.DISJUNCTIVE);
+        assertEquals(eClauseType.DISJUNCTIVE, formula.getType());
         try {
-            assertEquals(formula.negation().getType(), eClauseType.CONJUNCTIVE);
+            assertEquals(eClauseType.CONJUNCTIVE, formula.negation().getType());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -107,9 +107,9 @@ class FormulaTest {
     @Test
     void setType() {
         formula.setType(eClauseType.CONJUNCTIVE);
-        assertEquals(formula.getType(), eClauseType.CONJUNCTIVE);
+        assertEquals(eClauseType.CONJUNCTIVE, formula.getType());
         formula.setType(eClauseType.DISJUNCTIVE);
-        assertEquals(formula.getType(), eClauseType.DISJUNCTIVE);
+        assertEquals(eClauseType.DISJUNCTIVE, formula.getType());
     }
 
     @Test
@@ -117,17 +117,17 @@ class FormulaTest {
         try {
             formula.add(literal);
             System.out.println(formula.toString());
-            assertEquals(formula.size(), 1);
+            assertEquals(1, formula.size());
             assertTrue(formula.contains(literal));
             formula.add(formula.negation());
             System.out.println(formula.toString());
-            assertEquals(formula.size(), 2);
+            assertEquals(2, formula.size());
             formula.add(formula.negation());
             System.out.println(formula.toString());
-            assertEquals(formula.size(), 3);
+            assertEquals(3, formula.size());
             formula.add(formula);
             System.out.println(formula.toString());
-            assertEquals(formula.size(), 4);
+            assertEquals(4, formula.size());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -138,12 +138,60 @@ class FormulaTest {
     @Test
     void negation() {
         try {
-            assertEquals(formula.negation().getType(), eClauseType.CONJUNCTIVE);
+            assertEquals(eClauseType.CONJUNCTIVE, formula.negation().getType());
             formula.add(literal);
             Formula neg = formula.negation();
-            assertEquals(neg.getType(), eClauseType.CONJUNCTIVE);
-            assertEquals(neg.toString(), "(~test)");
+            assertEquals(eClauseType.CONJUNCTIVE, neg.getType());
+            assertEquals("(~test)", neg.toString());
             // todo more test cases
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+    }
+
+    @Test
+    void test_clone() {
+        Formula another = formula.clone();
+        try {
+            formula.add(literal);
+            assertNotEquals(formula, another);
+            assertFalse(formula.equals(another));
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+    }
+
+    @Test
+    void test_hashCode() {
+        assertEquals(formula.hashCode(), formula.hashCode());
+        assertEquals(formula.hashCode(), formula.clone().hashCode());
+        try {
+            assertNotEquals(formula.hashCode(), formula.negation().hashCode());
+            formula.add(literal);
+            formula.add(formula.negation().clone());
+            assertEquals(formula.hashCode(), formula.clone().hashCode());
+            assertNotEquals(formula.hashCode(), formula.negation().hashCode());
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+    }
+
+    @Test
+    void test_equals() {
+        assertTrue(formula.equals(formula));
+        assertTrue(formula.equals(formula.clone()));
+        assertFalse(formula.equals(literal));
+        try {
+            assertFalse(formula.equals(formula.negation()));
+
+            formula.add(literal.negation());
+            assertTrue(formula.equals(formula));
+            assertTrue(formula.equals(formula.clone()));
+            assertFalse(formula.equals(literal));
+            assertFalse(formula.equals(formula.negation()));
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -152,22 +200,24 @@ class FormulaTest {
 
     @Disabled("not implemented")
     @Test
-    void test_clone() {
-    }
-
-    @Disabled("not implemented")
-    @Test
-    void test_hashCode() {
-    }
-
-    @Disabled("not implemented")
-    @Test
-    void test_equals() {
-    }
-
-    @Disabled("not implemented")
-    @Test
     void test_toString() {
+        try {
+            formula.add(literal);
+            System.out.println(formula.toString());
+            assertEquals("(test)", formula.toString());
+            formula.add(formula.negation());
+            System.out.println(formula.toString());
+            assertEquals("(test|(~test))", formula.toString());
+            formula.add(formula.negation());
+            System.out.println(formula.toString());
+            assertEquals("(test|((test)&~test)|(~test))", formula.toString());
+            formula.add(formula);
+            System.out.println(formula.toString());
+            assertEquals("(test|((test)&~test)|(~test)|(~test&test))", formula.toString());
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
     }
 
     @Disabled("not implemented")
