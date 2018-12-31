@@ -209,10 +209,10 @@ class FormulaTest {
             assertEquals("((~test)|test)", formula.toString());
             formula.add(formula.negation());
             System.out.println(formula.toString());
-            assertEquals("((~test)|test|(~test&(test)))", formula.toString());
+            assertEquals("(((test)&~test)|(~test)|test)", formula.toString());
             formula.add(formula);
             System.out.println(formula.toString());
-            assertEquals("((~test)|(~test&test)|test|(~test&(test)))", formula.toString());
+            assertEquals("(((test)&~test)|(test&~test)|(~test)|test)", formula.toString());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);

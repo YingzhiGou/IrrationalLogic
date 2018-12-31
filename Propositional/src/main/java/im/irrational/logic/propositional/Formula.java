@@ -2,10 +2,7 @@ package im.irrational.logic.propositional;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
     HashSet<ILogicFormula> clauses;
@@ -158,6 +155,7 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         for (ILogicFormula clause : clauses){
             clauseStrs.add(clause.toString());
         }
+        Collections.sort(clauseStrs);  // return consistent strings
         return "(" + String.join(this.type.getSymble(), clauseStrs) + ")";
     }
 
