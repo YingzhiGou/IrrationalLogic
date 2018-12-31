@@ -218,9 +218,4 @@ class FormulaTest {
             fail(formulaError);
         }
     }
-
-    @Disabled("not implemented")
-    @Test
-    void iterator() {
-    }
 }
