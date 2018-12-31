@@ -163,4 +163,33 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
     public Iterator<ILogicFormula> iterator() {
         return this.clauses.iterator();
     }
+
+    /**
+     * testing if the formula is CNF
+     *
+     * @return true if the formula is CNF
+     */
+    public Boolean isCNF() {
+        if (this.type == eClauseType.CONJUNCTIVE) {
+            for (ILogicFormula clause : this.clauses) {
+                if (clause instanceof Formula) {
+                    Formula formula = (Formula) clause;
+                    if (formula.type == eClauseType.DISJUNCTIVE) {
+                        for (ILogicFormula literal : formula) {
+                            if (literal instanceof Literal) {
+
+                            } else {
+                                return false;
+                            }
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }

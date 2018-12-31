@@ -218,4 +218,35 @@ class FormulaTest {
             fail(formulaError);
         }
     }
+
+    @Test
+    void isCNF() {
+        assertFalse(formula.isCNF());
+        try {
+            assertTrue(formula.negation().isCNF());
+
+            formula.add(literal);
+            assertFalse(formula.isCNF());
+            assertTrue(formula.negation().isCNF());
+
+            formula.add(formula.negation());
+            assertFalse(formula.isCNF());
+            assertTrue(formula.negation().isCNF());
+
+            formula.add(formula.negation());
+            assertFalse(formula.isCNF());
+            assertFalse(formula.negation().isCNF());
+            System.out.println(formula.negation().toString());
+
+            formula.setType(eClauseType.CONJUNCTIVE);
+            System.out.println(formula.toString());
+            assertFalse(formula.isCNF());
+            assertFalse(formula.negation().isCNF());
+
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+
+    }
 }
