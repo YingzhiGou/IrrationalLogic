@@ -25,8 +25,45 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         clauses = new HashSet<ILogicFormula>();
     }
 
+    public Formula(eClauseType type, ILogicFormula... clauses) {
+        this.type = type;
+        this.clauses = new HashSet<>();
+        for (ILogicFormula l : clauses) {
+            this.clauses.add(l.clone());
+        }
+    }
+
     public int size(){
         return clauses.size();
+    }
+
+    /**
+     * testing if the formula is CNF
+     *
+     * @return true if the formula is CNF
+     */
+    static Boolean isCNF(Formula formula) {
+        if (formula.type == eClauseType.CONJUNCTIVE) {
+            for (ILogicFormula clause : formula.clauses) {
+                if (clause instanceof Formula) {
+                    Formula f = (Formula) clause;
+                    if (f.type == eClauseType.DISJUNCTIVE) {
+                        for (ILogicFormula literal : f) {
+                            if (literal instanceof Literal) {
+
+                            } else {
+                                return false;
+                            }
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public static Formula convertToCNF(final Formula c) throws FormulaError{
@@ -164,32 +201,11 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         return this.clauses.iterator();
     }
 
-    /**
-     * testing if the formula is CNF
-     *
-     * @return true if the formula is CNF
-     */
-    public Boolean isCNF() {
-        if (this.type == eClauseType.CONJUNCTIVE) {
-            for (ILogicFormula clause : this.clauses) {
-                if (clause instanceof Formula) {
-                    Formula formula = (Formula) clause;
-                    if (formula.type == eClauseType.DISJUNCTIVE) {
-                        for (ILogicFormula literal : formula) {
-                            if (literal instanceof Literal) {
+    public Formula toCNF() throws FormulaError {
+        return convertToCNF(this);
+    }
 
-                            } else {
-                                return false;
-                            }
-                        }
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+    public Boolean isCNF() {
+        return isCNF(this);
     }
 }

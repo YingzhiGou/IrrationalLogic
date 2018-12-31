@@ -2,7 +2,6 @@ package im.irrational.logic.propositional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -34,9 +33,47 @@ class FormulaTest {
         }
     }
 
-    @Disabled("not implemented")
     @Test
-    void convertToCNF() {
+    void toCNF() {
+        try {
+            // {\displaystyle \neg (B\lor C)}
+            formula = new Formula(eClauseType.DISJUNCTIVE, new Literal("B", 1), new Literal("C", 2)).negation();
+            assertTrue(formula.isCNF());
+            // {\displaystyle \neg B\land \neg C}
+            Formula cnf = formula.toCNF();
+            assertTrue(cnf.isCNF());
+            assertEquals("(~B&~C)", cnf.toString());
+
+            // {\displaystyle (A\land B)\lor C}
+            formula = new Formula(eClauseType.DISJUNCTIVE,
+                    new Formula(eClauseType.CONJUNCTIVE,
+                            new Literal("A", 1),
+                            new Literal("B", 2)),
+                    new Literal("C", 3));
+            assertFalse(formula.isCNF());
+            // {\displaystyle (A\lor C)\land (B\lor C)}
+            cnf = formula.toCNF();
+            assertTrue(cnf.isCNF());
+            assertEquals("(A|C)&(B|C)", cnf.toString());
+
+            // {\displaystyle A\land (B\lor (D\land E))}
+            formula = new Formula(eClauseType.CONJUNCTIVE,
+                    new Literal("A", 1),
+                    new Formula(eClauseType.DISJUNCTIVE,
+                            new Literal("B", 2),
+                            new Formula(eClauseType.CONJUNCTIVE,
+                                    new Literal("D", 3),
+                                    new Literal("E", 4))));
+            assertFalse(formula.isCNF());
+            // {\displaystyle A\land (B\lor D)\land (B\lor E)}
+            cnf = formula.toCNF();
+            assertTrue(cnf.isCNF());
+            assertEquals("A&(B|D)&(B|E)", cnf.toString());
+
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
     }
 
     @Test
