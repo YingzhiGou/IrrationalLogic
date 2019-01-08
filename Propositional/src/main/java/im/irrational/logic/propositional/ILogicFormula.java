@@ -6,7 +6,7 @@ public interface ILogicFormula {
      *
      * @return the negation of the logic formula
      */
-    ILogicFormula negation();
+    ILogicFormula negation() throws FormulaError;
 
     ILogicFormula clone();
 }
