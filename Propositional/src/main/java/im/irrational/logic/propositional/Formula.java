@@ -181,6 +181,26 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         }
     }
 
+    /**
+     * simplify representations by turning Formula of 1 clause to the clause
+     */
+    public Formula simplified() throws FormulaError {
+        Formula simplified = new Formula(this.getType());
+        for (ILogicFormula clause : this) {
+            if (clause instanceof Formula) {
+                Formula formula = (Formula) clause;
+                if (formula.size() == 1) {
+                    for (ILogicFormula f : formula) {
+                        simplified.add(f);
+                    }
+                } else {
+                    simplified.add(formula.simplified());
+                }
+            } else simplified.add(clause);
+        }
+        return simplified;
+    }
+
     public Formula negation() throws FormulaError {
         Formula newC = new Formula();
         newC.type = type.neg();
