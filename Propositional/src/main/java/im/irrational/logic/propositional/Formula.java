@@ -67,16 +67,12 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
     }
 
     public static Formula convertToCNF(final Formula c) throws FormulaError{
+        Formula cnf = new Formula(eClauseType.CONJUNCTIVE);
         if (c == null){
             return null;
         } else if (c.size() == 0){
-            Formula newFormula = new Formula(eClauseType.CONJUNCTIVE);
-            return newFormula;
-        } else if (c.size() == 1){
-            Formula newClause = new Formula(eClauseType.CONJUNCTIVE);
-            newClause.addAll(c);
-            return newClause;
-        } else if (c.type == eClauseType.CONJUNCTIVE){
+            return cnf;
+        } else if (c.size() == 1 || c.type == eClauseType.CONJUNCTIVE) {
             /*
              If φ has the form P ^ Q, then:
 			 CONVERT(P) must have the form P1 ^ P2 ^ ... ^ Pm, and
@@ -84,15 +80,16 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
 			 where all the Pi and Qi are disjunctions of clauses.
 			 So return P1 ^ P2 ^ ... ^ Pm ^ Q1 ^ Q2 ^ ... ^ Qn.
             */
-            Formula newClause = new Formula(eClauseType.CONJUNCTIVE);
-            newClause.addAll(c);
-            return newClause;
+            for (ILogicFormula clause : c) {
+                cnf.addAsCNF(clause);
+            }
+            return cnf;
         } else if (c.type == eClauseType.DISJUNCTIVE){
             /*
              If φ has the form P v Q, then:
 			 CONVERT(P) must have the form P1 ^ P2 ^ ... ^ Pm, and
 			 CONVERT(Q) must have the form Q1 ^ Q2 ^ ... ^ Qn,
-			 where all the Pi and Qi are dijunctions of clauses.
+			 where all the Pi and Qi are disjunctions of clauses.
 			 So we need a CNF formula equivalent to
 			 (P1 ^ P2 ^ ... ^ Pm) v (Q1 ^ Q2 ^ ... ^ Qn).
 			 So return (P1 v Q1) ^ (P1 v Q2) ^ ... ^ (P1 v Qn)
@@ -100,15 +97,46 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
 			 ...
 			 ^ (Pm v Q1) ^ (Pm v Q2) ^ ... ^ (Pm v Qn)
 			 */
-            Formula disjunctive = new Formula(c);
-            while(disjunctive.size()>2){
-                Formula tmp = new Formula(eClauseType.DISJUNCTIVE);
-                tmp.addAll(disjunctive);
-                disjunctive = convertToCNF(tmp);
+            Formula p = new Formula(eClauseType.DISJUNCTIVE);
+            Iterator<ILogicFormula> it = c.iterator();
+            if (it.hasNext()) {
+                ILogicFormula clause = it.next();
+                if (clause instanceof Literal) {
+                    p.add(clause);
+                } else if (clause instanceof Formula) {
+                    p.add(convertToCNF((Formula) clause));
+                } else {
+                    throw new FormulaError(String.format("Unknown logic element type: %s", clause.getClass().getName()));
+                }
             }
-            //todo incomplete implementation!!!
+            p = convertToCNF(p);
+
+            Formula q = new Formula(eClauseType.DISJUNCTIVE);
+            while (it.hasNext()) {
+                ILogicFormula clause = it.next();
+                if (clause instanceof Literal) {
+                    q.add(clause);
+                } else if (clause instanceof Formula) {
+                    q.add(convertToCNF((Formula) clause));
+                } else {
+                    throw new FormulaError(String.format("Unknown logic element type: %s", clause.getClass().getName()));
+                }
+            }
+
+            q = convertToCNF(q);
+
+            for (ILogicFormula pClause : p) {
+                for (ILogicFormula qClause : q) {
+                    Formula disjunctive = new Formula(eClauseType.DISJUNCTIVE);
+                    disjunctive.add(pClause);
+                    disjunctive.add(qClause);
+                    cnf.add(disjunctive);
+                }
+            }
+            return cnf;
+        } else {
+            throw new FormulaError(String.format("formula must be a type of conjunctive or disjunctive, not %s", c.type.toString()));
         }
-        return null;
     }
 
     public boolean contains(final Object other){
@@ -131,7 +159,9 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         if (this.getClass() == clause.getClass()){
             Formula f = (Formula) clause;
             if (f.type == this.type){
-                this.addAll(f.clone());
+                for (ILogicFormula c : f) {
+                    this.add(c.clone());
+                }
             } else if(f.size() > 0){
                 this.clauses.add(f.clone());
             }
@@ -141,15 +171,13 @@ public class Formula implements ILogicFormula, Iterable<ILogicFormula> {
         }
     }
 
-    private void addAll(final Iterable<ILogicFormula> c) throws FormulaError {
-        for (ILogicFormula clause : c) {
-            if (clause instanceof Literal) {
-                this.add(clause);
-            } else if (clause instanceof Formula) {
-                this.add(convertToCNF((Formula) clause));
-            } else {
-                throw new FormulaError(String.format("Unknown logic element type: %s", clause.getClass().getName()));
-            }
+    private void addAsCNF(final ILogicFormula clause) throws FormulaError {
+        if (clause instanceof Literal) {
+            this.add(clause);
+        } else if (clause instanceof Formula) {
+            this.add(convertToCNF((Formula) clause));
+        } else {
+            throw new FormulaError(String.format("Unknown logic element type: %s", clause.getClass().getName()));
         }
     }
 

@@ -54,7 +54,7 @@ class FormulaTest {
             // {\displaystyle (A\lor C)\land (B\lor C)}
             cnf = formula.toCNF();
             assertTrue(cnf.isCNF());
-            assertEquals("(A|C)&(B|C)", cnf.toString());
+            assertEquals("((A|C)&(B|C))", cnf.toString());
 
             // {\displaystyle A\land (B\lor (D\land E))}
             formula = new Formula(eClauseType.CONJUNCTIVE,
@@ -68,7 +68,7 @@ class FormulaTest {
             // {\displaystyle A\land (B\lor D)\land (B\lor E)}
             cnf = formula.toCNF();
             assertTrue(cnf.isCNF());
-            assertEquals("A&(B|D)&(B|E)", cnf.toString());
+            assertEquals("((B|D)&(B|E)&A)", cnf.toString());
 
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
@@ -162,9 +162,10 @@ class FormulaTest {
             formula.add(formula.negation());
             System.out.println(formula.toString());
             assertEquals(3, formula.size());
+            System.out.println(String.format("%s + %s", formula.toString(), formula.toString()));
             formula.add(formula);
             System.out.println(formula.toString());
-            assertEquals(4, formula.size());
+            assertEquals(3, formula.size());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -249,7 +250,7 @@ class FormulaTest {
             assertEquals("(((test)&~test)|(~test)|test)", formula.toString());
             formula.add(formula);
             System.out.println(formula.toString());
-            assertEquals("(((test)&~test)|(test&~test)|(~test)|test)", formula.toString());
+            assertEquals("(((test)&~test)|(~test)|test)", formula.toString());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -272,7 +273,8 @@ class FormulaTest {
 
             formula.add(formula.negation());
             assertFalse(formula.isCNF());
-            assertFalse(formula.negation().isCNF());
+            System.out.println(formula.negation());
+            assertTrue(formula.negation().isCNF());
             System.out.println(formula.negation().toString());
 
             formula.setType(eClauseType.CONJUNCTIVE);
