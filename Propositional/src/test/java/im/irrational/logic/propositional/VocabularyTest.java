@@ -70,7 +70,8 @@ class VocabularyTest {
         try {
             Literal l = voc.parse(str);
             assertEquals(l.getName(), "p");
-            assertEquals(voc.toLiteral(l.getValue()), l);
+            assertTrue(l.getValue());
+//            assertEquals(voc.toLiteral(l.getValue()), l);
         } catch (LanguageFormatException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -79,17 +80,18 @@ class VocabularyTest {
         try {
             Literal l = voc.parse(str);
             assertEquals(l.getName(), "d");
-            assertEquals(voc.toLiteral(l.getValue()), l);
+            assertFalse(l.getValue());
+//            assertEquals(voc.toLiteral(l.getValue()), l);
         } catch (LanguageFormatException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
     }
 
-    @Test
-    void toLiteral() {
-        Vocabulary voc = new Vocabulary();
-        assertNull(voc.toLiteral(623243));
-        assertNull(voc.toLiteral(-234098));
-    }
+//    @Test
+//    void toLiteral() {
+//        Vocabulary voc = new Vocabulary();
+//        assertNull(voc.toLiteral(623243));
+//        assertNull(voc.toLiteral(-234098));
+//    }
 }

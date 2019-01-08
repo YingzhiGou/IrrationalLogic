@@ -14,7 +14,7 @@ class FormulaTest {
     @BeforeEach
     void setUp() {
         formula = new Formula();
-        literal = new Literal("test", 1);
+        literal = new Literal("test", true);
     }
 
     @AfterEach
@@ -25,7 +25,7 @@ class FormulaTest {
     void size() {
         assertEquals(formula.size(), 0);
         try {
-            formula.add(new Literal("test", 1));
+            formula.add(new Literal("test", true));
             assertEquals(1, formula.size());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
@@ -37,7 +37,7 @@ class FormulaTest {
     void toCNF() {
         try {
             // {\displaystyle \neg (B\lor C)}
-            formula = new Formula(eClauseType.DISJUNCTIVE, new Literal("B", 1), new Literal("C", 2)).negation();
+            formula = new Formula(eClauseType.DISJUNCTIVE, new Literal("B", true), new Literal("C", true)).negation();
             assertTrue(formula.isCNF());
             // {\displaystyle \neg B\land \neg C}
             Formula cnf = formula.toCNF();
@@ -47,9 +47,9 @@ class FormulaTest {
             // {\displaystyle (A\land B)\lor C}
             formula = new Formula(eClauseType.DISJUNCTIVE,
                     new Formula(eClauseType.CONJUNCTIVE,
-                            new Literal("A", 1),
-                            new Literal("B", 2)),
-                    new Literal("C", 3));
+                            new Literal("A", true),
+                            new Literal("B", true)),
+                    new Literal("C", true));
             assertFalse(formula.isCNF());
             // {\displaystyle (A\lor C)\land (B\lor C)}
             cnf = formula.toCNF();
@@ -58,12 +58,12 @@ class FormulaTest {
 
             // {\displaystyle A\land (B\lor (D\land E))}
             formula = new Formula(eClauseType.CONJUNCTIVE,
-                    new Literal("A", 1),
+                    new Literal("A", true),
                     new Formula(eClauseType.DISJUNCTIVE,
-                            new Literal("B", 2),
+                            new Literal("B", true),
                             new Formula(eClauseType.CONJUNCTIVE,
-                                    new Literal("D", 3),
-                                    new Literal("E", 4))));
+                                    new Literal("D", true),
+                                    new Literal("E", true))));
             assertFalse(formula.isCNF());
             // {\displaystyle A\land (B\lor D)\land (B\lor E)}
             cnf = formula.toCNF();

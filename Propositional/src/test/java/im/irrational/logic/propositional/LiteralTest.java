@@ -18,26 +18,26 @@ class LiteralTest {
 
     @Test
     void getValue() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         assertEquals(1, literal.getValue());
     }
 
     @Test
     void getName() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         assertEquals("test", literal.getName());
     }
 
     @Test
     void test_toString() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         assertEquals("test", literal.toString());
         assertEquals(Literal.NEGATION_SYMBOL + "test", literal.negation().toString());
     }
 
     @Test
     void negation() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         literal = literal.negation();
         assertEquals(-1, literal.getValue());
         assertEquals("test", literal.getName());
@@ -50,7 +50,7 @@ class LiteralTest {
 
     @Test
     void test_clone() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         Literal cloned = literal.clone();
         literal = literal.negation();
         assertNotEquals(literal, cloned);
@@ -64,21 +64,21 @@ class LiteralTest {
 
     @Test
     void equals() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         assertTrue(literal.equals(literal));
         assertTrue(literal.equals(literal.clone()));
         assertFalse(literal.equals(literal.negation()));
-        Literal other = new Literal("anotherTest", 1);
+        Literal other = new Literal("anotherTest", true);
         assertFalse(literal.equals(other));
         assertFalse(literal.equals(other.negation()));
     }
 
     @Test
     void test_hashCode() {
-        Literal literal = new Literal("test", 1);
+        Literal literal = new Literal("test", true);
         assertEquals(literal.hashCode(), literal.clone().hashCode());
         assertNotEquals(literal.hashCode(), literal.negation().hashCode());
-        Literal other = new Literal("test1", 1);
+        Literal other = new Literal("test1", true);
         assertNotEquals(literal.hashCode(), other.hashCode());
     }
 }
