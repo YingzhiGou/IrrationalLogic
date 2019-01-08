@@ -22,6 +22,9 @@ install:
   - pushd Propositional
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - popd
+  - pushd Operator
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - popd
 
 jdk:
   - oraclejdk8
@@ -40,6 +43,9 @@ before_script:
 
 script:
   - pushd Propositional
+  - mvn -DskipTests=false test
+  - popd
+  - pushd Operator
   - mvn -DskipTests=false test
   - popd
 
