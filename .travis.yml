@@ -29,6 +29,12 @@ jdk:
   - openjdk8
   - openjdk11
 
+matrix:
+  fast_finish: true
+  allow_failures:
+    - jdk: oraclejdk11
+    - jdk: openjdk11
+
 before_script:
   - unset _JAVA_OPTIONS # travis/travis#8408
 
