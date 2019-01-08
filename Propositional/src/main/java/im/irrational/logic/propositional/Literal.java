@@ -3,13 +3,18 @@ package im.irrational.logic.propositional;
 import org.jetbrains.annotations.NotNull;
 
 public class Literal implements ILogicFormula {
-    public static final String NEGATION_SYMBLE = "~";
+    public static final String NEGATION_SYMBOL = "~";
     private int value;
     private String name;
 
     public Literal(@NotNull Literal aThis) {
         this.value = aThis.value;
         this.name = aThis.name;
+    }
+
+    Literal(String name, int value) {
+        this.name = name;
+        this.value = value;
     }
 
     public int getValue() {
@@ -22,10 +27,10 @@ public class Literal implements ILogicFormula {
 
     @Override
     public String toString() {
-        return (value > 0 ? name : NEGATION_SYMBLE.concat(name));
+        return (value > 0 ? name : NEGATION_SYMBOL.concat(name));
     }
 
-    public ILogicFormula negation() {
+    public Literal negation() {
         Literal neg = this.clone();
         neg.value = -neg.value;
         return neg;
