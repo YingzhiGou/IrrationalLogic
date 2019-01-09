@@ -258,9 +258,26 @@ class ClauseTest {
     }
 
     @Test
-    void isCNF() {
-        assertFalse(clause.isCNF());
+    void test_simplified() {
         try {
+            clause.add(literal);
+            assertEquals("(test)", clause.simplified().toString());
+            clause.add(clause.negation());
+            assertEquals("(test|~test)", clause.simplified().toString());
+            clause.add(clause.negation());
+            assertEquals("((test&~test)|test|~test)", clause.simplified().toString());
+            clause.add(clause);
+            assertEquals("((test&~test)|test|~test)", clause.simplified().toString());
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+            fail(formulaError);
+        }
+    }
+
+    @Test
+    void isCNF() {
+        try {
+            assertFalse(clause.isCNF());
             assertTrue(clause.negation().isCNF());
 
             clause.add(literal);
@@ -274,7 +291,8 @@ class ClauseTest {
             clause.add(clause.negation());
             assertFalse(clause.isCNF());
             System.out.println(clause.negation());
-            assertTrue(clause.negation().isCNF());
+            assertFalse(clause.negation().isCNF());
+            assertTrue(clause.negation().simplified().isCNF());
             System.out.println(clause.negation().toString());
 
             clause.setType(eClauseType.CONJUNCTIVE);

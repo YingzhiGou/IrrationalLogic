@@ -46,7 +46,6 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
                     if (f.type == eClauseType.DISJUNCTIVE) {
                         for (ILogicFormula literal : f) {
                             if (literal instanceof Literal) {
-
                             } else {
                                 return false;
                             }
