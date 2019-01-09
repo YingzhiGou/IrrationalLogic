@@ -19,7 +19,7 @@ class LiteralTest {
     @Test
     void getValue() {
         Literal literal = new Literal("test", true);
-        assertEquals(1, literal.getValue());
+        assertTrue(literal.getValue());
     }
 
     @Test
@@ -39,11 +39,11 @@ class LiteralTest {
     void negation() {
         Literal literal = new Literal("test", true);
         literal = literal.negation();
-        assertEquals(-1, literal.getValue());
+        assertFalse(literal.getValue());
         assertEquals("test", literal.getName());
         assertEquals(Literal.NEGATION_SYMBOL + "test", literal.toString());
         literal = literal.negation();
-        assertEquals(1, literal.getValue());
+        assertTrue(literal.getValue());
         assertEquals("test", literal.getName());
         assertEquals("test", literal.toString());
     }

@@ -2,7 +2,7 @@ package im.irrational.logic.propositional;
 
 import java.util.HashMap;
 
-@Deprecated(since = "no longer useful")
+@Deprecated()
 public class Vocabulary implements ILanguage<Literal> {
     private static HashMap<String, Integer> dictWord2Int = new HashMap<>();
     private static HashMap<Integer, String> dictInt2Word = new HashMap<>();
