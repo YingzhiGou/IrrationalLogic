@@ -19,12 +19,7 @@ before_install:
   - rm ~/.m2/settings.xml
 
 install:
-  - pushd Propositional
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-  - popd
-  - pushd Operator
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-  - popd
 
 jdk:
   - oraclejdk8
@@ -42,12 +37,10 @@ before_script:
   - unset _JAVA_OPTIONS # travis/travis#8408
 
 script:
-  - pushd Propositional
   - mvn -DskipTests=false test
-  - popd
-  - pushd Operator
-  - mvn -DskipTests=false test
-  - popd
+
+after_script:
+  - mvn coveralls:report
 
 notifications:
   email: false
