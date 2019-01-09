@@ -12,7 +12,7 @@ public class Literal implements ILogicFormula {
         this.name = aThis.name;
     }
 
-    Literal(String name, boolean value) {
+    public Literal(String name, boolean value) {
         this.name = name;
         this.value = value;
     }
