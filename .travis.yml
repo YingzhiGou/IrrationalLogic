@@ -37,7 +37,7 @@ before_script:
   - unset _JAVA_OPTIONS # travis/travis#8408
 
 script:
-  - mvn -DskipTests=false test cobertura:cobertura
+  - mvn -DskipTests=false cobertura:cobertura
 
 after_success:
   - mvn clean coveralls:report
