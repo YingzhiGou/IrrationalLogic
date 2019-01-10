@@ -2,12 +2,11 @@ import im.irrational.logic.propositional.*;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.SolverFactory;
+import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IteratorInt;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 import static java.lang.Math.abs;
 
@@ -23,7 +22,7 @@ public class MSSSolver {
     public MSSSolver() {
     }
 
-    public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) {
+    public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) throws FormulaError {
         // init solver
         ISolver solver = null;
         switch (this.solverType) {
@@ -37,7 +36,70 @@ public class MSSSolver {
         solver.setTimeout(solverTimeout);
         // clear temporary variables
         this.tempVariables.clear();
+        // add kb
+        try {
+            addHardClauses(solver, kb);
+        } catch (ContradictionException e) {
+            throw new FormulaError(String.format("Inconsistent Knowledge Base"));
+        }
+        // add hard clauses
+        try {
+            addHardClauses(solver, hardFormula);
+        } catch (ContradictionException e) {
+            throw new FormulaError(e.getMessage());
+        }
+        // add soft clauses
+        addSoftClauses(solver, softFormula);
+        HashSet<HashSet<VecInt>> comsses = this.findAllCoMSSes();
+
+        LinkedList<Clause> MSSes = new LinkedList<>();
+    }
+
+    /**
+     * you are not expected to understand this
+     *
+     * @return
+     */
+    private HashSet<HashSet<VecInt>> findAllCoMSSes() {
+        int bound = 1;
+        HashSet<HashSet<VecInt>> comsses = new HashSet<>();
         
+    }
+
+    private void addHardClauses(final ISolver solver, final Clause formula) throws FormulaError, ContradictionException {
+        if (formula != null) {
+            Vec<VecInt> encodedHardFormula = encode(formula);
+            for (Iterator<VecInt> it = encodedHardFormula.iterator(); it.hasNext(); ) {
+                solver.addClause(it.next());
+            }
+        }
+    }
+
+    private void addSoftClauses(final ISolver solver, final Clause formula) throws FormulaError {
+        if (formula != null) {
+            Vec<VecInt> encodedSoftFormula = encode(formula);
+            // generate selector variables
+            int[] selectorVariables = new int[encodedSoftFormula.size()];
+            int var = dictInt2Word.size() + tempVariables.size() + 1;
+            Iterator<VecInt> it = encodedSoftFormula.iterator();
+            for (int i = 0; i < selectorVariables.length && it.hasNext(); i++) {
+                while (dictInt2Word.containsKey(var) || tempVariables.contains(var)) {
+                    var++;
+                }
+                selectorVariables[i] = var;
+
+                // add soft clause with selector variable
+                VecInt sWithY = new VecInt();
+                sWithY.pushAll(it.next());
+                sWithY.push(-var); //deselect the clause by default
+
+                try {
+                    solver.addClause(sWithY);
+                } catch (ContradictionException e) {
+                    throw new FormulaError(String.format("Unexpected Error with the soft formula: %s", formula.toString()));
+                }
+            }
+        }
     }
 
     enum SAT4JSolverType {
@@ -73,12 +135,12 @@ public class MSSSolver {
             throw new FormulaError(String.format("failed to convert formula to CNF: formula=%s, cnf=%s", formula.toString(), cnfFormula.toString()));
         }
         Vec<VecInt> encodedFormula = new Vec<>();
-        for (ILogicFormula disjunctiveClouse : cnfFormula) {
+        for (ILogicFormula disjunctiveClause : cnfFormula) {
             VecInt encodedClause = new VecInt();
-            if (disjunctiveClouse instanceof Literal) {
-                encodedClause.push(encode((Literal) disjunctiveClouse));
-            } else if (disjunctiveClouse instanceof Clause) {
-                for (ILogicFormula element : (Clause) disjunctiveClouse) {
+            if (disjunctiveClause instanceof Literal) {
+                encodedClause.push(encode((Literal) disjunctiveClause));
+            } else if (disjunctiveClause instanceof Clause) {
+                for (ILogicFormula element : (Clause) disjunctiveClause) {
                     encodedClause.push(encode((Literal) element));
                 }
             }
