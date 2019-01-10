@@ -40,7 +40,7 @@ script:
   - mvn -DskipTests=false test jacoco:report
 
 after_success:
-  - mvn clean coveralls:report
+  - mvn coveralls:report
 
 notifications:
   email: false
