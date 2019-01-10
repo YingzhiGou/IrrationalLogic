@@ -40,7 +40,7 @@ script:
   - mvn -DskipTests=false test cobertura:cobertura
 
 after_success:
-  - mvn coveralls:report
+  - mvn clean coveralls:report
 
 notifications:
   email: false
