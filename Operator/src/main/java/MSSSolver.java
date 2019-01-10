@@ -1,9 +1,12 @@
 import im.irrational.logic.propositional.*;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.pb.SolverFactory;
+import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IteratorInt;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import static java.lang.Math.abs;
@@ -12,8 +15,35 @@ import static java.lang.Math.abs;
  * find all the maximum satisfiable subsets
  */
 public class MSSSolver {
-    private HashMap<String, Integer> dictWord2Int = new HashMap<>();
-    private HashMap<Integer, String> dictInt2Word = new HashMap<>();
+    private final HashMap<String, Integer> dictWord2Int = new HashMap<>();
+    private final HashMap<Integer, String> dictInt2Word = new HashMap<>();
+    private final HashSet<Integer> tempVariables = new HashSet<>();
+    private SAT4JSolverType solverType = SAT4JSolverType.DEFAULT;
+
+    public MSSSolver() {
+    }
+
+    public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) {
+        // init solver
+        ISolver solver = null;
+        switch (this.solverType) {
+            case LIGHT:
+                solver = SolverFactory.newLight();
+                break;
+            case DEFAULT:
+            default:
+                solver = SolverFactory.newDefault();
+        }
+        solver.setTimeout(solverTimeout);
+        // clear temporary variables
+        this.tempVariables.clear();
+        
+    }
+
+    enum SAT4JSolverType {
+        LIGHT,
+        DEFAULT
+    }
 
     public int encode(final Literal literal) {
         String word = literal.getName();
