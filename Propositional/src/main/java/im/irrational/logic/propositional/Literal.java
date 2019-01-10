@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Literal implements ILogicFormula {
     public static final String NEGATION_SYMBOL = "~";
-    private int value;
+    private boolean value;
     private String name;
 
     public Literal(@NotNull Literal aThis) {
@@ -12,12 +12,12 @@ public class Literal implements ILogicFormula {
         this.name = aThis.name;
     }
 
-    Literal(String name, int value) {
+    public Literal(String name, boolean value) {
         this.name = name;
         this.value = value;
     }
 
-    public int getValue() {
+    public boolean getValue() {
         return value;
     }
 
@@ -27,12 +27,12 @@ public class Literal implements ILogicFormula {
 
     @Override
     public String toString() {
-        return (value > 0 ? name : NEGATION_SYMBOL.concat(name));
+        return (value ? name : NEGATION_SYMBOL.concat(name));
     }
 
     public Literal negation() {
         Literal neg = this.clone();
-        neg.value = -neg.value;
+        neg.value = !neg.value;
         return neg;
     }
 
@@ -52,6 +52,6 @@ public class Literal implements ILogicFormula {
 
     @Override
     public int hashCode() {
-        return 31 * value + (name == null ? 0 : name.hashCode());
+        return 31 * (value ? 1 : 0) + (name == null ? 0 : name.hashCode());
     }
 }
