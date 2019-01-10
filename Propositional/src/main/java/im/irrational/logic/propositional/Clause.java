@@ -50,7 +50,6 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
                                 return false;
                             }
                         }
-                        return true;
                     } else {
                         return false;
                     }

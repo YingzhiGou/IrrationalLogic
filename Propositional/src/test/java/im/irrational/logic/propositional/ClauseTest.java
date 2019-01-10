@@ -153,18 +153,18 @@ class ClauseTest {
     void add() {
         try {
             clause.add(literal);
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals(1, clause.size());
             assertTrue(clause.contains(literal));
             clause.add(clause.negation());
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals(2, clause.size());
             clause.add(clause.negation());
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals(3, clause.size());
-            System.out.println(String.format("%s + %s", clause.toString(), clause.toString()));
+//            System.out.println(String.format("%s + %s", clause.toString(), clause.toString()));
             clause.add(clause);
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals(3, clause.size());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
@@ -240,16 +240,16 @@ class ClauseTest {
     void test_toString() {
         try {
             clause.add(literal);
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals("(test)", clause.toString());
             clause.add(clause.negation());
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals("((~test)|test)", clause.toString());
             clause.add(clause.negation());
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals("(((test)&~test)|(~test)|test)", clause.toString());
             clause.add(clause);
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertEquals("(((test)&~test)|(~test)|test)", clause.toString());
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
@@ -290,13 +290,15 @@ class ClauseTest {
 
             clause.add(clause.negation());
             assertFalse(clause.isCNF());
-            System.out.println(clause.negation());
+//            System.out.println(clause.toString());
+//            System.out.println(clause.negation().toString());
             assertFalse(clause.negation().isCNF());
+//            System.out.println(clause.negation().simplified().toString());
             assertTrue(clause.negation().simplified().isCNF());
-            System.out.println(clause.negation().toString());
+//            System.out.println(clause.negation().toString());
 
             clause.setType(eClauseType.CONJUNCTIVE);
-            System.out.println(clause.toString());
+//            System.out.println(clause.toString());
             assertFalse(clause.isCNF());
             assertFalse(clause.negation().isCNF());
 
