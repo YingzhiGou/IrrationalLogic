@@ -37,10 +37,10 @@ before_script:
   - unset _JAVA_OPTIONS # travis/travis#8408
 
 script:
-  - mvn -DskipTests=false test jacoco:report
+  - mvn -DskipTests=false test
 
 after_success:
-  - mvn coveralls:report
+  - mvn clean test jacoco:report coveralls:report
 
 notifications:
   email: false
