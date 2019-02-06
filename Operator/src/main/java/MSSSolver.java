@@ -63,7 +63,7 @@ public class MSSSolver {
     private HashSet<HashSet<VecInt>> findAllCoMSSes() {
         int bound = 1;
         HashSet<HashSet<VecInt>> comsses = new HashSet<>();
-        
+
     }
 
     private void addHardClauses(final ISolver solver, final Clause formula) throws FormulaError, ContradictionException {
