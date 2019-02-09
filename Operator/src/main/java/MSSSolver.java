@@ -4,9 +4,13 @@ import org.sat4j.core.VecInt;
 import org.sat4j.pb.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -49,22 +53,32 @@ public class MSSSolver {
             throw new FormulaError(e.getMessage());
         }
         // add soft clauses
-        addSoftClauses(solver, softFormula);
-        HashSet<HashSet<VecInt>> comsses = this.findAllCoMSSes();
+        IVecInt selectorVariables = addSoftClauses(solver, softFormula);
+//        HashSet<HashSet<VecInt>> comsses = this.findAllCoMSSes(solver);
+//
+//        LinkedList<Clause> MSSes = new LinkedList<>();
+        // find maximum sat
+        for (int bound = selectorVariables.size(); bound > 0; --bound) {
+            try {
+                solver.addAtMost(selectorVariables, bound);
+            } catch (ContradictionException e) {
 
-        LinkedList<Clause> MSSes = new LinkedList<>();
+            }
+        }
     }
 
     /**
      * you are not expected to understand this
      *
      * @return
+     * @param solver
      */
-    private HashSet<HashSet<VecInt>> findAllCoMSSes() {
-        int bound = 1;
-        HashSet<HashSet<VecInt>> comsses = new HashSet<>();
-
-    }
+//    private HashSet<HashSet<VecInt>> findAllCoMSSes(ISolver solver) {
+//        int bound = 1;
+//        HashSet<HashSet<VecInt>> comsses = new HashSet<>();
+//
+//
+//    }
 
     private void addHardClauses(final ISolver solver, final Clause formula) throws FormulaError, ContradictionException {
         if (formula != null) {
@@ -75,7 +89,7 @@ public class MSSSolver {
         }
     }
 
-    private void addSoftClauses(final ISolver solver, final Clause formula) throws FormulaError {
+    private IVecInt addSoftClauses(final ISolver solver, final Clause formula) throws FormulaError {
         if (formula != null) {
             Vec<VecInt> encodedSoftFormula = encode(formula);
             // generate selector variables
@@ -99,7 +113,9 @@ public class MSSSolver {
                     throw new FormulaError(String.format("Unexpected Error with the soft formula: %s", formula.toString()));
                 }
             }
+            return encode(selectorVariables);
         }
+        return VecInt.EMPTY;
     }
 
     enum SAT4JSolverType {
@@ -126,6 +142,10 @@ public class MSSSolver {
         } else {
             return -value;
         }
+    }
+
+    public VecInt encode(final int[] intArr) {
+        return new VecInt(intArr);
     }
 
     public Vec<VecInt> encode(final Clause formula) throws FormulaError {
