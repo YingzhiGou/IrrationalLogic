@@ -1,16 +1,13 @@
+package im.irrational.logic.propositional.operators;
+
 import im.irrational.logic.propositional.*;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.SolverFactory;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.*;
+import org.sat4j.tools.ModelIterator;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Math.abs;
 
@@ -26,7 +23,7 @@ public class MSSSolver {
     public MSSSolver() {
     }
 
-    public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) throws FormulaError {
+    public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) throws FormulaError, Timeout {
         // init solver
         ISolver solver = null;
         switch (this.solverType) {
@@ -53,18 +50,85 @@ public class MSSSolver {
             throw new FormulaError(e.getMessage());
         }
         // add soft clauses
-        IVecInt selectorVariables = addSoftClauses(solver, softFormula);
-//        HashSet<HashSet<VecInt>> comsses = this.findAllCoMSSes(solver);
-//
-//        LinkedList<Clause> MSSes = new LinkedList<>();
-        // find maximum sat
-        for (int bound = selectorVariables.size(); bound > 0; --bound) {
-            try {
-                solver.addAtMost(selectorVariables, bound);
-            } catch (ContradictionException e) {
+        HashMap<Integer, VecInt> selectorClauseMap = addSoftClauses(solver, softFormula);
+        // create selector vector
+        VecInt selectors = new VecInt();
+        for (Integer selector : selectorClauseMap.keySet()){
+            selectors.push(selector);
+        }
+        LinkedList<Clause> MSSes = new LinkedList<>();
+        boolean unsat = true;
+        // find maximum subsat
+        try {
+            for (int bound = selectorClauseMap.size(); bound>0; bound--){
+                try{
+                    IConstr selectionConstraint = solver.addAtLeast(selectors, bound);
+                    ModelIterator mi = new ModelIterator(solver);
+                    while (mi.isSatisfiable()){
+                        unsat = false;
+                        int[] model = mi.model();
+                        // create maxsat subset according to the model
+                        Clause mss = (hardFormula == null? new Clause(eClauseType.CONJUNCTIVE) : hardFormula.toCNF());
+                        VecInt blocking = new VecInt();
+                        for (int value : model){
+                            if (selectorClauseMap.containsKey(value)){
+                                blocking.push(-value);
+                                VecInt clause = selectorClauseMap.get(value);
+                                Clause disjunctiveClause = new Clause(eClauseType.DISJUNCTIVE);
+                                for (IteratorInt it = clause.iterator(); it.hasNext();){
+                                    int literal = it.next();
+                                    disjunctiveClause.add(decode(literal));
+                                    blocking.push(-literal);
+                                }
+                                mss.add(disjunctiveClause);
+                            }
+                        }
+                        try{
+                            solver.addBlockingClause(blocking);
+                        } catch (ContradictionException e){
+                            // removing constraint if it has been added?
+                        }
+                        // this is a hack
+                        // to keep the maximum sets
+                        mss = mss.toCNF();
+                        boolean isMaximum = true;
+                        LinkedList<Clause> redundant = new LinkedList<>();
+                        for (Clause existingMSS: MSSes){
+                            if (existingMSS.containsAll(mss)){
+                                isMaximum = false;
+                                break;
+                            } else if (mss.containsAll(existingMSS)){
+                                redundant.push(existingMSS);
+                            }
+                        }
+                        if (isMaximum) {
+                            // add maximum set
+                            MSSes.add(mss);
+                        }
+                        // remove sets that are no longer maximum
+                        for (Clause toRemove : redundant){
+                            MSSes.remove(toRemove);
+                        }
+                    }
+                    // backtrack
+                    solver.removeConstr(selectionConstraint);
+                } catch (ContradictionException e){
 
+                }
+            }
+            if (unsat){
+                // no soft clauses can be added to the max set, result contains only hard formula
+                MSSes.add(hardFormula.toCNF());
+                unsat = false;
+            }
+        } catch (TimeoutException e){
+            throw new Timeout(e.getMessage());
+        } finally {
+            if (unsat){
+                MSSes = null;
             }
         }
+        return MSSes;
     }
 
     /**
@@ -89,23 +153,25 @@ public class MSSSolver {
         }
     }
 
-    private IVecInt addSoftClauses(final ISolver solver, final Clause formula) throws FormulaError {
+    private HashMap<Integer, VecInt> addSoftClauses(final ISolver solver, final Clause formula) throws FormulaError {
+        HashMap<Integer, VecInt> selectorClauseMap = new HashMap<>();
         if (formula != null) {
             Vec<VecInt> encodedSoftFormula = encode(formula);
             // generate selector variables
-            int[] selectorVariables = new int[encodedSoftFormula.size()];
             int var = dictInt2Word.size() + tempVariables.size() + 1;
-            Iterator<VecInt> it = encodedSoftFormula.iterator();
-            for (int i = 0; i < selectorVariables.length && it.hasNext(); i++) {
+
+            for (Iterator<VecInt> it = encodedSoftFormula.iterator(); it.hasNext();) {
                 while (dictInt2Word.containsKey(var) || tempVariables.contains(var)) {
                     var++;
                 }
-                selectorVariables[i] = var;
-
+                tempVariables.add(var);
                 // add soft clause with selector variable
                 VecInt sWithY = new VecInt();
-                sWithY.pushAll(it.next());
+                VecInt clause = it.next();
+                sWithY.pushAll(clause);
                 sWithY.push(-var); //deselect the clause by default
+
+                selectorClauseMap.put(var, clause);
 
                 try {
                     solver.addClause(sWithY);
@@ -113,9 +179,8 @@ public class MSSSolver {
                     throw new FormulaError(String.format("Unexpected Error with the soft formula: %s", formula.toString()));
                 }
             }
-            return encode(selectorVariables);
         }
-        return VecInt.EMPTY;
+        return selectorClauseMap;
     }
 
     enum SAT4JSolverType {
@@ -178,12 +243,12 @@ public class MSSSolver {
         if (dictInt2Word.containsKey(abs)) {
             return new Literal(dictInt2Word.get(abs), value > 0);
         } else {
-            throw new FormulaError(String.format("failed to decode %d, word does not exist.", value));
+            return new Literal(String.format("Unnamed%d", abs), value>0);
         }
     }
 
-    public Clause decode(final VecInt values) throws FormulaError {
-        Clause clause = new Clause(eClauseType.DISJUNCTIVE);
+    public Clause decode(final VecInt values, eClauseType type) throws FormulaError {
+        Clause clause = new Clause(type);
         for (IteratorInt it = values.iterator(); it.hasNext(); ) {
             int value = it.next();
             clause.add(decode(value));
@@ -195,7 +260,7 @@ public class MSSSolver {
         Clause clause = new Clause(eClauseType.CONJUNCTIVE);
         for (Iterator<VecInt> it = cnfFormula.iterator(); it.hasNext(); ) {
             VecInt disjunctiveClause = it.next();
-            clause.add(decode(disjunctiveClause));
+            clause.add(decode(disjunctiveClause, eClauseType.DISJUNCTIVE));
         }
         return clause;
     }
