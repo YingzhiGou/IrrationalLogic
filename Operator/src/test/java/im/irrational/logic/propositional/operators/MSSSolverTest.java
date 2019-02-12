@@ -22,7 +22,7 @@ class MSSSolverTest {
     }
 
     @Test
-    void findAllMaxSatisfiableSubFormulas() {
+    void MaxSat_classic() {
         // KB = ~R | ~P | ~Q
         // soft = P & Q
         // hard = R
@@ -42,6 +42,361 @@ class MSSSolverTest {
         } catch (FormulaError | Timeout error) {
             error.printStackTrace();
             fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_classic_redundant_rules() {
+        // KB = (~P | ~Q | ~R) & (P12 | P21 | ~B11) & (~P11 | B21)  &  (~P22 | B21)
+        // soft = P & Q
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("P", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P12", true),
+                                    new Literal("P21", true),
+                                    new Literal("B11", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P11", false),
+                                    new Literal("B21", true)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P22", false),
+                                    new Literal("B21", true))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(2, solutions.size());
+            assertEquals("[(Q&R), (P&R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_classic_2() {
+        // KB = ~P|~Q|~R|~S
+        // soft = P & Q & S
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", false),
+                            new Literal("P", false),
+                            new Literal("Q", false),
+                            new Literal("S", false)),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true),
+                            new Literal("S", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(3, solutions.size());
+            assertEquals("[(Q&R&S), (P&R&S), (P&Q&R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_no_kb(){
+        // empty kb
+        // kb =
+        // soft = P & Q
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    null,
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(P&Q&R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_empty_kb(){
+        // empty kb
+        // kb = {}
+        // soft = P & Q
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.DISJUNCTIVE),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(P&Q&R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_classic_3(){
+        // KB = (~P|~Q|~R|~S) & (~P|Q)
+        // soft = P & Q & S
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("P", false),
+                                    new Literal("Q", false),
+                                    new Literal("S", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("Q", true))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true),
+                            new Literal("S", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(2, solutions.size());
+            assertEquals("[(Q&R&S), (P&Q&R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_eliminate_soft_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft = P & Q
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_no_soft_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft =
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    null,
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_empty_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft = ()
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    new Clause(eClauseType.DISJUNCTIVE),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(R)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_no_hard_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft = P & Q
+        // hard =
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    null, 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(P&Q)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_empty_hard_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft = P & Q
+        // hard =
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    new Clause(eClauseType.DISJUNCTIVE), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(P&Q)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_inconsistent_kb(){
+        // KB = (~P|~Q|~R|~S) & (~P|Q) & (~P|~Q) & P
+        // soft = P & Q & S
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("P", false),
+                                    new Literal("Q", false),
+                                    new Literal("S", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("Q", true)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("Q", false)),
+                            new Literal("P", true)),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true),
+                            new Literal("S", true)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("P", true)), 10);
+            assertNull(solutions);
+        } catch (Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        } catch (FormulaError formulaError) {
+            formulaError.printStackTrace();
+        }
+    }
+
+    @Test
+    void MaxSat_inconsistent_soft_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft = ~P & P
+        // hard = R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("P", false)),
+                    new Clause(eClauseType.DISJUNCTIVE,
+                            new Literal("R", true)), 10);
+            assertEquals(1, solutions.size());
+            assertEquals("[(R&~P)]", solutions.toString());
+        } catch (FormulaError | Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        }
+    }
+
+    @Test
+    void MaxSat_inconsistent_hard_clauses(){
+        // KB = (~Q|~R) & (~P|~R)
+        // soft = P & Q
+        // hard = R & ~R
+        try {
+            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("R", false),
+                                    new Literal("Q", false)),
+                            new Clause(eClauseType.DISJUNCTIVE,
+                                    new Literal("P", false),
+                                    new Literal("R", false))),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("P", true),
+                            new Literal("Q", true)),
+                    new Clause(eClauseType.CONJUNCTIVE,
+                            new Literal("R", true),
+                            new Literal("R", false)), 10);
+            fail("should not reach here");
+        } catch (Timeout error) {
+            error.printStackTrace();
+            fail(error);
+        } catch (FormulaError formulaError) {
+            assertEquals("Creating Empty clause ?", formulaError.getMessage());
         }
     }
 

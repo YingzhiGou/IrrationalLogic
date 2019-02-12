@@ -60,7 +60,7 @@ public class MSSSolver {
         boolean unsat = true;
         // find maximum subsat
         try {
-            for (int bound = selectorClauseMap.size(); bound>0; bound--){
+            for (int bound = selectorClauseMap.size(); bound>=0; bound--){
                 try{
                     IConstr selectionConstraint = solver.addAtLeast(selectors, bound);
                     ModelIterator mi = new ModelIterator(solver);
@@ -115,11 +115,6 @@ public class MSSSolver {
                 } catch (ContradictionException e){
 
                 }
-            }
-            if (unsat){
-                // no soft clauses can be added to the max set, result contains only hard formula
-                MSSes.add(hardFormula.toCNF());
-                unsat = false;
             }
         } catch (TimeoutException e){
             throw new Timeout(e.getMessage());
