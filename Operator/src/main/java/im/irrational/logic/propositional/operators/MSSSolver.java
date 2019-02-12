@@ -28,7 +28,7 @@ public class MSSSolver {
         this(SAT4JSolverType.DEFAULT);
     }
 
-    public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) throws FormulaError, Timeout {
+    public List<Clause> call(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) throws FormulaError, Timeout {
         // init solver
         ISolver solver = null;
         switch (this.solverType) {

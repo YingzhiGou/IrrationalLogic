@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,7 +28,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.DISJUNCTIVE,
                             new Literal("R", false),
                             new Literal("P", false),
@@ -54,7 +52,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -89,7 +87,7 @@ class MSSSolverTest {
         // soft = P & Q & S
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.DISJUNCTIVE,
                             new Literal("R", false),
                             new Literal("P", false),
@@ -116,7 +114,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     null,
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Literal("P", true),
@@ -138,7 +136,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.DISJUNCTIVE),
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Literal("P", true),
@@ -159,7 +157,7 @@ class MSSSolverTest {
         // soft = P & Q & S
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -189,7 +187,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -216,7 +214,7 @@ class MSSSolverTest {
         // soft =
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -241,7 +239,7 @@ class MSSSolverTest {
         // soft = ()
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -266,7 +264,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard =
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -292,7 +290,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard =
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -318,7 +316,7 @@ class MSSSolverTest {
         // soft = P & Q & S
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -353,7 +351,7 @@ class MSSSolverTest {
         // soft = ~P & P
         // hard = R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
@@ -380,7 +378,7 @@ class MSSSolverTest {
         // soft = P & Q
         // hard = R & ~R
         try {
-            List<Clause> solutions = solver.findAllMaxSatisfiableSubFormulas(
+            List<Clause> solutions = solver.call(
                     new Clause(eClauseType.CONJUNCTIVE,
                             new Clause(eClauseType.DISJUNCTIVE,
                                     new Literal("R", false),
