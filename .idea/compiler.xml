@@ -10,5 +10,10 @@
         <module name="Propositional" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="IrrationalLogic" target="1.8" />
+      <module name="Operator" target="1.8" />
+      <module name="Propositional" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
