@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/IrrationalLogic.iml" filepath="$PROJECT_DIR$/.idea/IrrationalLogic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Operator/Operator.iml" filepath="$PROJECT_DIR$/Operator/Operator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Propositional/Propositional.iml" filepath="$PROJECT_DIR$/Propositional/Propositional.iml" />
+    </modules>
+  </component>
+</project>

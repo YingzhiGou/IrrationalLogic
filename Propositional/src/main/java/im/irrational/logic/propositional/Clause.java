@@ -145,6 +145,10 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
         return elements.containsAll(other);
     }
 
+    public boolean containsAll(final Clause other){
+        return elements.containsAll(other.elements);
+    }
+
     public eClauseType getType(){
         return type;
     }
