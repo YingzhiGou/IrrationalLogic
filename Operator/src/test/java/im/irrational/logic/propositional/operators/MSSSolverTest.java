@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -515,5 +517,23 @@ class MSSSolverTest {
             formulaError.printStackTrace();
             fail(formulaError);
         }
+    }
+
+    @Test
+    void MaxSat_exhaustive(){
+        this.MaxSat_classic();
+        this.MaxSat_classic_2();
+        this.MaxSat_classic_3();
+        this.MaxSat_classic_redundant_rules();
+        this.MaxSat_eliminate_soft_clauses();
+        this.MaxSat_empty_clauses();
+        this.MaxSat_empty_hard_clauses();
+        this.MaxSat_empty_kb();
+        this.MaxSat_inconsistent_hard_clauses();
+        this.MaxSat_inconsistent_kb();
+        this.MaxSat_inconsistent_soft_clauses();
+        this.MaxSat_no_hard_clauses();
+        this.MaxSat_no_kb();
+        this.MaxSat_no_soft_clauses();
     }
 }
