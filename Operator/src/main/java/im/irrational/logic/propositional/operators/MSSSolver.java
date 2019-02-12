@@ -20,7 +20,12 @@ public class MSSSolver {
     private final HashSet<Integer> tempVariables = new HashSet<>();
     private SAT4JSolverType solverType = SAT4JSolverType.DEFAULT;
 
-    public MSSSolver() {
+    public MSSSolver(SAT4JSolverType type) {
+        solverType = type;
+    }
+
+    public MSSSolver(){
+        this(SAT4JSolverType.DEFAULT);
     }
 
     public List<Clause> findAllMaxSatisfiableSubFormulas(final Clause kb, final Clause softFormula, final Clause hardFormula, final int solverTimeout) throws FormulaError, Timeout {
