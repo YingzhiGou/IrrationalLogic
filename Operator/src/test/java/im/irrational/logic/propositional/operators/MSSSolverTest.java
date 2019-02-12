@@ -11,6 +11,7 @@ import org.sat4j.core.VecInt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -435,10 +436,24 @@ class MSSSolverTest {
                                     new Literal("a", false),
                                     new Literal("b", true)),
                             new Literal("c", true)));
-            assertEquals(3, encoded.get(0).get(0));
-            assertEquals(-1, encoded.get(1).get(0));
-            assertEquals(2, encoded.get(1).get(1));
+            // check the result, note that the order of the vectors may be different from time to time
+            assertEquals(2, encoded.size());
 
+            boolean clause1checked = false, clause2checked = false;
+
+            for (Iterator<VecInt> it = encoded.iterator(); it.hasNext();){
+                VecInt clause = it.next();
+                if (clause.size() == 1){
+                    assertEquals(3, clause.get(0));
+                    clause2checked = true;
+                } else if (clause.size() == 2){
+                    assertEquals(-1, clause.get(0));
+                    assertEquals(2, clause.get(1));
+                    clause1checked = true;
+                }
+            }
+            assertTrue(clause1checked);
+            assertTrue(clause2checked);
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
