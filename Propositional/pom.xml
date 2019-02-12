@@ -6,12 +6,12 @@
 
     <groupId>im.irrational.logic</groupId>
     <artifactId>Propositional</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>a0.1</version>
 
     <parent>
         <groupId>im.irrational</groupId>
         <artifactId>IrrationalLogic</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>a0.1</version>
     </parent>
 
     <dependencies>

@@ -6,19 +6,12 @@
 
     <groupId>im.irrational.logic</groupId>
     <artifactId>Operator</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <skipTests>false</skipTests>
-    </properties>
+    <version>a0.1</version>
 
     <parent>
         <groupId>im.irrational</groupId>
         <artifactId>IrrationalLogic</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>a0.1</version>
     </parent>
 
     <dependencies>
@@ -42,7 +35,13 @@
         <dependency>
             <groupId>im.irrational.logic</groupId>
             <artifactId>Propositional</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>a0.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>im.irrational.logic</groupId>
+            <artifactId>Propositional</artifactId>
+            <version>a0.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
