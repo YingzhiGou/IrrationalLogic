@@ -134,7 +134,7 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
         return elements.size();
     }
 
-    public boolean contains(final Object other){
+    public boolean contains(final ILogicFormula other){
         return elements.contains(other);
     }
 
@@ -217,13 +217,14 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
         return newC;
     }
 
+    /***
+     * shallow copy, do not use
+     * @return
+     */
     public Clause clone() {
         Clause clonedClause;
         try {
             clonedClause = (Clause) super.clone();
-            clonedClause.elements.clear();
-            Clause finalClause = clonedClause;
-            this.elements.forEach(c -> finalClause.elements.add(c.clone()));
         } catch (CloneNotSupportedException e) {
             clonedClause = new Clause(this);
         }
@@ -244,10 +245,16 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
             return false;
         }
         final Clause other = (Clause) obj;
-        if (this.type == other.type) {
+        if (this.isEmpty() && other.isEmpty()) {
+            return true;
+        } else if (this.type == other.type) {
             return this.elements.equals(other.elements);
         }
         return false;
+    }
+
+    private boolean isEmpty() {
+        return elements.isEmpty();
     }
 
     @Override

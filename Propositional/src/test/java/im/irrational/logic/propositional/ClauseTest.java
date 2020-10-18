@@ -193,8 +193,8 @@ class ClauseTest {
         Clause another = clause.clone();
         try {
             clause.add(literal);
-            assertNotEquals(clause, another);
-            assertFalse(clause.equals(another));
+            assertEquals(clause, another); // shallow copy
+            assertTrue(clause.equals(another));
         } catch (FormulaError formulaError) {
             formulaError.printStackTrace();
             fail(formulaError);
@@ -223,7 +223,8 @@ class ClauseTest {
         assertTrue(clause.equals(clause.clone()));
         assertFalse(clause.equals(literal));
         try {
-            assertFalse(clause.equals(clause.negation()));
+            // empty clauses equal
+            assertTrue(clause.equals(clause.negation()));
 
             clause.add(literal.negation());
             assertTrue(clause.equals(clause));
