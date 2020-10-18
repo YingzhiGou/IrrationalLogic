@@ -1,30 +1,32 @@
 package im.irrational.logic.propositional;
 
-import java.util.HashSet;
+import java.util.*;
 
 public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
-    HashSet<ILogicFormula> elements;
-    eClauseType type;
+    private final HashSet<ILogicFormula> elements = new HashSet<>();
+    private eClauseType type;
 
     public Clause() {
         this(eClauseType.DISJUNCTIVE);
     }
 
     public Clause(final Clause e) {
-        this(e.type);
-        for (ILogicFormula l : e.elements) {
-            elements.add(l.clone());
-        }
+        this(e.type, e.elements);
     }
 
     public Clause(final eClauseType type) {
-        this.type = type;
-        elements = new HashSet<ILogicFormula>();
+        this.type = Objects.requireNonNull(type);
     }
 
     public Clause(final eClauseType type, final ILogicFormula... elements) {
         this.type = type;
-        this.elements = new HashSet<>();
+        for (ILogicFormula l : elements) {
+            this.elements.add(l.clone());
+        }
+    }
+
+    public Clause(final eClauseType type, final Iterable<ILogicFormula> elements) {
+        this(type);
         for (ILogicFormula l : elements) {
             this.elements.add(l.clone());
         }
@@ -35,15 +37,14 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
      *
      * @return true if the formula is CNF
      */
-    static Boolean isCNF(Clause formula) {
+    static Boolean isCNF(final Clause formula) {
         if (formula.type == eClauseType.CONJUNCTIVE) {
             for (ILogicFormula clause : formula.elements) {
                 if (clause instanceof Clause) {
                     Clause f = (Clause) clause;
                     if (f.type == eClauseType.DISJUNCTIVE) {
                         for (ILogicFormula literal : f) {
-                            if (literal instanceof Literal) {
-                            } else {
+                            if (!(literal instanceof Literal)) {
                                 return false;
                             }
                         }
@@ -58,10 +59,9 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
     }
 
     public static Clause convertToCNF(final Clause c) throws FormulaError {
+        Objects.requireNonNull(c);
         Clause cnf = new Clause(eClauseType.CONJUNCTIVE);
-        if (c == null){
-            return null;
-        } else if (c.size() == 0){
+        if (c.size() == 0){
             return cnf;
         } else if (c.size() == 1 || c.type == eClauseType.CONJUNCTIVE) {
             /*
@@ -138,10 +138,18 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
         return elements.contains(other);
     }
 
+    /***
+     * @deprecated this function is removed, it is not logically correct to compare elements of Clause without the type of the clause
+     */
+    @Deprecated(since = "a0.2", forRemoval = true)
     public boolean containsAll(final Collection<?> other) {
         return elements.containsAll(other);
     }
 
+    /***
+     * @deprecated this function is removed, it is not logically correct to compare elements of Clause without the type of the clause
+     */
+    @Deprecated(since = "a0.2", forRemoval = true)
     public boolean containsAll(final Clause other){
         return elements.containsAll(other.elements);
     }
@@ -183,7 +191,7 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
     /**
      * simplify representations by turning Clause of 1 clause to the clause
      */
-    public Clause simplified() throws FormulaError {
+    public Clause simplify() throws FormulaError {
         Clause simplified = new Clause(this.getType());
         for (ILogicFormula clause : this) {
             if (clause instanceof Clause) {
@@ -193,7 +201,7 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
                         simplified.add(f);
                     }
                 } else {
-                    simplified.add(formula.simplified());
+                    simplified.add(formula.simplify());
                 }
             } else simplified.add(clause);
         }
@@ -202,7 +210,7 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
 
     public Clause negation() throws FormulaError {
         Clause newC = new Clause();
-        newC.type = type.neg();
+        newC.type = this.type.neg();
         for (ILogicFormula l : elements) {
             newC.add(l.negation());
         }
@@ -210,7 +218,16 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
     }
 
     public Clause clone() {
-        return new Clause(this);
+        Clause clonedClause;
+        try {
+            clonedClause = (Clause) super.clone();
+            clonedClause.elements.clear();
+            Clause finalClause = clonedClause;
+            this.elements.forEach(c -> finalClause.elements.add(c.clone()));
+        } catch (CloneNotSupportedException e) {
+            clonedClause = new Clause(this);
+        }
+        return clonedClause;
     }
 
     @Override
@@ -243,7 +260,6 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
         return "(" + String.join(this.type.getSymble(), clauseStrs) + ")";
     }
 
-    @NotNull
     public Iterator<ILogicFormula> iterator() {
         return this.elements.iterator();
     }

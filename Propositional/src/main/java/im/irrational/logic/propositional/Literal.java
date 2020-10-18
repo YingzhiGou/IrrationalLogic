@@ -7,6 +7,9 @@ public class Literal implements ILogicFormula {
     private final boolean value;
     private final String displayName;
 
+    public static Literal TRUE = new Literal("TRUE", true);
+    public static Literal FALSE = new Literal("FALSE", false);
+
     /***
      *
      * @param aThis

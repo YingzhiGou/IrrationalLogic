@@ -1,6 +1,6 @@
 package im.irrational.logic.propositional;
 
-public interface ILogicFormula {
+public interface ILogicFormula extends Cloneable {
     /**
      * negation of the element
      *
