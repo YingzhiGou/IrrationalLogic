@@ -1,19 +1,26 @@
 package im.irrational.logic.propositional;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 public class Literal implements ILogicFormula {
     public static final String NEGATION_SYMBOL = "~";
-    private boolean value;
-    private String name;
+    private final boolean value;
+    private final String displayName;
 
-    public Literal(@NotNull Literal aThis) {
+    /***
+     *
+     * @param aThis
+     * @deprecated deep copy constructor is disabled since Literal is now immutable
+     */
+    @Deprecated(since = "a0.2", forRemoval = true)
+    public Literal(final Literal aThis) {
+        Objects.requireNonNull(aThis, "cannot deep copy null");
         this.value = aThis.value;
-        this.name = aThis.name;
+        this.displayName = aThis.displayName;
     }
 
-    public Literal(String name, boolean value) {
-        this.name = name;
+    public Literal(final String displayName, final boolean value) {
+        this.displayName = displayName;
         this.value = value;
     }
 
@@ -21,37 +28,42 @@ public class Literal implements ILogicFormula {
         return value;
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
     @Override
     public String toString() {
-        return (value ? name : NEGATION_SYMBOL.concat(name));
+        return (value ? displayName : NEGATION_SYMBOL.concat(displayName));
     }
 
     public Literal negation() {
-        Literal neg = this.clone();
-        neg.value = !neg.value;
-        return neg;
+        return new Literal(this.displayName, !value);
     }
 
     @Override
     public Literal clone() {
-        return new Literal(this);
+//        Literal newLiteral;
+//        try {
+//            newLiteral = (Literal) super.clone();
+//        } catch (CloneNotSupportedException e) {
+//            newLiteral = new Literal(this);
+//        }
+//        return newLiteral;
+        return this; // no deep copy or clone, this object is immutable
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof Literal)) return false;
         Literal literal = (Literal) o;
         return value == literal.value &&
-                name.equals(literal.name);
+                displayName.equals(literal.displayName);
     }
 
     @Override
     public int hashCode() {
-        return 31 * (value ? 1 : 0) + (name == null ? 0 : name.hashCode());
+        return 31 * (value ? 1 : 0) + (displayName == null ? 0 : displayName.hashCode());
     }
 }

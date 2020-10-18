@@ -25,7 +25,7 @@ class LiteralTest {
     @Test
     void getName() {
         Literal literal = new Literal("test", true);
-        assertEquals("test", literal.getName());
+        assertEquals("test", literal.getDisplayName());
     }
 
     @Test
@@ -40,11 +40,11 @@ class LiteralTest {
         Literal literal = new Literal("test", true);
         literal = literal.negation();
         assertFalse(literal.getValue());
-        assertEquals("test", literal.getName());
+        assertEquals("test", literal.getDisplayName());
         assertEquals(Literal.NEGATION_SYMBOL + "test", literal.toString());
         literal = literal.negation();
         assertTrue(literal.getValue());
-        assertEquals("test", literal.getName());
+        assertEquals("test", literal.getDisplayName());
         assertEquals("test", literal.toString());
     }
 
@@ -54,11 +54,11 @@ class LiteralTest {
         Literal cloned = literal.clone();
         literal = literal.negation();
         assertNotEquals(literal, cloned);
-        assertEquals(literal.getName(), cloned.getName());
+        assertEquals(literal.getDisplayName(), cloned.getDisplayName());
         assertNotEquals(literal.getValue(), cloned.getValue());
         cloned = cloned.negation();
         assertEquals(literal, cloned);
-        assertEquals(literal.getName(), cloned.getName());
+        assertEquals(literal.getDisplayName(), cloned.getDisplayName());
         assertEquals(literal.getValue(), cloned.getValue());
     }
 

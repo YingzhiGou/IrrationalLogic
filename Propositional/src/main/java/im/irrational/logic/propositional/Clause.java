@@ -1,8 +1,6 @@
 package im.irrational.logic.propositional;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
+import java.util.HashSet;
 
 public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
     HashSet<ILogicFormula> elements;
@@ -13,19 +11,18 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
     }
 
     public Clause(final Clause e) {
-        this();
-        type = e.type;
+        this(e.type);
         for (ILogicFormula l : e.elements) {
             elements.add(l.clone());
         }
     }
 
-    public Clause(eClauseType type) {
+    public Clause(final eClauseType type) {
         this.type = type;
         elements = new HashSet<ILogicFormula>();
     }
 
-    public Clause(eClauseType type, ILogicFormula... elements) {
+    public Clause(final eClauseType type, final ILogicFormula... elements) {
         this.type = type;
         this.elements = new HashSet<>();
         for (ILogicFormula l : elements) {

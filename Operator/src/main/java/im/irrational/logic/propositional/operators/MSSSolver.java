@@ -189,7 +189,7 @@ public class MSSSolver {
     }
 
     public int encode(final Literal literal) {
-        String word = literal.getName();
+        String word = literal.getDisplayName();
         int value = 0;
         if (dictWord2Int.containsKey(word)) {
             value = dictWord2Int.get(word);
