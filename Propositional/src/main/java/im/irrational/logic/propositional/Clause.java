@@ -278,4 +278,8 @@ public class Clause implements ILogicFormula, Iterable<ILogicFormula> {
     public Boolean isCNF() {
         return isCNF(this);
     }
+
+    public HashSet<ILogicFormula> getElements() {
+        return elements;
+    }
 }

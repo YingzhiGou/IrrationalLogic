@@ -99,10 +99,11 @@ public class MSSSolver {
                         boolean isMaximum = true;
                         LinkedList<Clause> redundant = new LinkedList<>();
                         for (Clause existingMSS: MSSes){
-                            if (existingMSS.containsAll(mss)){
+                            assert eClauseType.CONJUNCTIVE.equals(existingMSS.getType());
+                            if (existingMSS.getElements().containsAll(mss.getElements())) {
                                 isMaximum = false;
                                 break;
-                            } else if (mss.containsAll(existingMSS)){
+                            } else if (mss.getElements().containsAll(existingMSS.getElements())){
                                 redundant.push(existingMSS);
                             }
                         }
@@ -191,17 +192,16 @@ public class MSSSolver {
     public int encode(final Literal literal) {
         String word = literal.getDisplayName();
         int value = 0;
-        if (dictWord2Int.containsKey(word)) {
-            value = dictWord2Int.get(word);
-        } else {
-            // new value
-            value = dictWord2Int.size() + 1;
-            while (dictInt2Word.containsKey(value)) {
-                value += 1;
+
+        value = dictWord2Int.computeIfAbsent(word, w ->{
+            int newValue = dictWord2Int.size() + 1;
+            while (dictInt2Word.containsKey(newValue)) {
+                newValue += 1;
             }
-            dictWord2Int.put(word, value);
-            dictInt2Word.put(value, word);
-        }
+            dictInt2Word.put(newValue, w);
+            return newValue;
+        });
+
         if (literal.getValue()) {
             return value;
         } else {
@@ -240,11 +240,12 @@ public class MSSSolver {
         }
 
         int abs = abs(value);
-        if (dictInt2Word.containsKey(abs)) {
-            return new Literal(dictInt2Word.get(abs), value > 0);
-        } else {
-            return new Literal(String.format("Unnamed%d", abs), value>0);
-        }
+        return new Literal(dictInt2Word.computeIfAbsent(abs, v -> String.format("Unnamed%d", v)), value > 0);
+//        if (dictInt2Word.containsKey(abs)) {
+//            return new Literal(dictInt2Word.get(abs), value > 0);
+//        } else {
+//            return new Literal(String.format("Unnamed%d", abs), value>0);
+//        }
     }
 
     public Clause decode(final VecInt values, eClauseType type) throws FormulaError {
